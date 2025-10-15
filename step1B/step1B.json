@@ -1,1 +1,6 @@
-
+[
+  {"priorityId":1,"level":"Faible"},
+  {"priorityId":2,"level":"Normal"},
+  {"priorityId":3,"level":"Urgent"},
+  {"priorityId":4,"level":"Critique"}
+]
