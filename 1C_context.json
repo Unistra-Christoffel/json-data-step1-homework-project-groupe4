@@ -1,0 +1,18 @@
+[
+  {
+    "contextId": 1,
+    "context": "Bureau"
+  },
+  {
+    "contextId": 2,
+    "context": "Domicile"
+  },
+  {
+    "contextId": 3,
+    "context": "Déplacement"
+  },
+  {
+    "contextId": 4,
+    "context": "En ligne"
+  }
+]

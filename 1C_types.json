@@ -1,0 +1,22 @@
+[
+  {
+    "typeId": 1,
+    "type": "Appel"
+  },
+  {
+    "typeId": 2,
+    "type": "Email"
+  },
+  {
+    "typeId": 3,
+    "type": "Rédaction"
+  },
+  {
+    "typeId": 4,
+    "type": "Réunion"
+  },
+  {
+    "typeId": 5,
+    "type": "Maintenance"
+  }
+]
