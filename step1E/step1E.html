@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etape 1E</title>
+<script>
+let tasksList = [
+  {
+    "taskId": 1,
+    "taskName": "Corriger l’affichage page produit",
+    "taskDesc": "Bug CSS sur mobile",
+    "createdAt": "2025-10-15T08:30:00Z",
+    "completedAt":null,
+    "priorityId": 3,
+    "statusId": 2,
+    "contextId": 4,
+    "typeId": 5
+  },
+  {
+    "taskId": 2,
+    "taskName": "Appeler le fournisseur X",
+    "taskDesc": "Confirmer le nouveau délai",
+    "createdAt": "2025-10-15T09:00:00Z",
+    "completedAt":"2025-11-15T09:10:00Z",
+    "priorityId": 4,
+    "statusId": 1,
+    "contextId": 3,
+    "typeId": 1
+  },
+  {
+    "taskId": 3,
+    "taskName": "Répondre aux emails clients",
+    "taskDesc": "Tickets en attente depuis plus de 24h",
+    "createdAt": "2025-10-15T10:15:00Z",
+    "completedAt":"2025-11-15T11:00:00Z",
+    "priorityId": 2,
+    "statusId": 1,
+    "contextId": 1,
+    "typeId": 2
+  }
+];
+
+let priorityList = [
+  {"priorityId":1,"level":"Faible"},
+  {"priorityId":2,"level":"Normal"},
+  {"priorityId":3,"level":"Urgent"},
+  {"priorityId":4,"level":"Critique"}
+];
+
+let contextList = [
+  {
+    "contextId": 1,
+    "context": "Bureau"
+  },
+  {
+    "contextId": 2,
+    "context": "Domicile"
+  },
+  {
+    "contextId": 3,
+    "context": "Déplacement"
+  },
+  {
+    "contextId": 4,
+    "context": "En ligne"
+  }
+];
+
+let statusList = [
+  {
+    "statusId": 1,
+    "status": "À faire"
+  },
+  {
+    "statusId": 2,
+    "status": "En cours"
+  },
+  {
+    "statusId": 3,
+    "status": "Bloquée"
+  },
+  {
+    "statusId": 4,
+    "status": "En attente"
+  },
+  {
+    "statusId": 5,
+    "status": "Terminée"
+  }
+];
+
+let typeList = [
+  {
+    "typeId": 1,
+    "type": "Appel"
+  },
+  {
+    "typeId": 2,
+    "type": "Email"
+  },
+  {
+    "typeId": 3,
+    "type": "Rédaction"
+  },
+  {
+    "typeId": 4,
+    "type": "Réunion"
+  },
+  {
+    "typeId": 5,
+    "type": "Maintenance"
+  }
+];
+console.log(tasksList);
+console.log(priorityList);
+console.log(contextList);
+console.log(statusList);
+console.log(typeList);
+
+</script>
+</head>
+<body>
+    
+</body>
+</html>
