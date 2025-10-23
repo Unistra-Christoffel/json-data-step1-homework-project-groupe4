@@ -1,3 +1,5 @@
+# SITE : 
+https://merkel.alwaysdata.net/todolist/n1/
 # Mise en situation
 
 L’application repose sur l’API (Application Programming Interface) Local Storage, qui permet l’enregistrement de données par le navigateur, qui seront conservées même après la fermeture du navigateur. Ces données sont identifiées par une « clé » et sont dans le format JSON (JavaScript Object Notation), à savoir des paires propriété / valeur, ou clé / valeur.
