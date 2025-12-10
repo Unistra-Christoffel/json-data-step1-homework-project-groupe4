@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 3A–3B TODO</title>
+
+    <style>
+        body {
+            min-height: 100vh;
+            margin:0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        main{
+            flex: 1;
+        }
+        h1, h2 { color: #333; }
+        .forms h2{ text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        .forms {
+            margin-top: 50px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        label { display: block; margin-bottom: 5px; }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            margin: 10px 0px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover { background-color: #218838; }
+        footer { text-align: center; color: #777; margin-top: 10px; }
+        .links { text-align: center; margin-top: 15px; }
+        .links a { color: #007bff; text-decoration: none; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+
+    <script>
+    // ============================================================
+    // === 3A === données JSON (priorité, contexte, statut, type)
+    // ============================================================
+
+    const priorityList = [
+        { priorityId: 1, level: "Faible" },
+        { priorityId: 2, level: "Normal" },
+        { priorityId: 3, level: "Urgent" },
+        { priorityId: 4, level: "Critique" }
+    ];
+
+    const contextList = [
+        { contextId: 1, context: "Bureau" },
+        { contextId: 2, context: "Domicile" },
+        { contextId: 3, context: "Déplacement" },
+        { contextId: 4, context: "En ligne" }
+    ];
+
+    const typeList = [
+        { typeId: 1, type: "Appel" },
+        { typeId: 2, type: "Email" },
+        { typeId: 3, type: "Rédaction" },
+        { typeId: 4, type: "Réunion" },
+        { typeId: 5, type: "Maintenance" }
+    ];
+
+    const statusList = [
+        { statusId: 1, status: "À faire" },
+        { statusId: 2, status: "En cours" },
+        { statusId: 3, status: "Bloquée" },
+        { statusId: 4, status: "En attente" },
+        { statusId: 5, status: "Terminée" }
+    ];
+
+    const STORAGE_KEY = "taskList";
+
+    function populateSelect(selectElement, list, idKey, labelKey) {
+        selectElement.innerHTML = '<option value="">-- Choisir --</option>';
+
+        list.forEach(item => {
+            const opt = document.createElement("option");
+            opt.value = item[idKey];
+            opt.textContent = item[labelKey];
+            selectElement.appendChild(opt);
+        });
+    }
+
+    // ============================================================
+    // === 3B === Gestion du localStorage : load/save/tasks
+    // ============================================================
+
+    function loadTasks() {
+        const json = localStorage.getItem(STORAGE_KEY);
+        if (!json) return [];
+        try {
+            return JSON.parse(json);
+        } catch (e) {
+            console.error("Erreur JSON.parse :", e);
+            return [];
+        }
+    }
+
+    function saveTasks(tasks) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function getNextTaskId(tasks) {
+        if (tasks.length === 0) return 1;
+        return tasks[tasks.length - 1].taskId + 1;
+    }
+
+    function handleSubmitTask(event) {
+        event.preventDefault();
+
+        const name = document.getElementById("taskName").value.trim();
+        const desc = document.getElementById("taskDesc").value.trim();
+        const priority = parseInt(document.getElementById("priorityId").value);
+        const context = parseInt(document.getElementById("contextId").value);
+        const type = parseInt(document.getElementById("typeId").value);
+        const status = parseInt(document.getElementById("statusId").value);
+
+        if (!name || !desc || !priority || !context || !type || !status) {
+            alert("Merci de remplir tous les champs.");
+            return;
+        }
+
+        const tasks = loadTasks();
+        const newId = getNextTaskId(tasks);
+
+        const newTask = {
+            taskId: newId,
+            taskName: name,
+            taskDesc: desc,
+            createdAt: new Date().toISOString(),
+            priorityId: priority,
+            contextId: context,
+            typeId: type,
+            statusId: status
+        };
+
+        tasks.push(newTask);
+        saveTasks(tasks);
+
+        alert("Tâche enregistrée !");
+        event.target.reset();
+    }
+
+    document.onreadystatechange = function () {
+        if (document.readyState === "complete") {
+
+            populateSelect(document.getElementById("priorityId"), priorityList, "priorityId", "level");
+            populateSelect(document.getElementById("contextId"), contextList, "contextId", "context");
+            populateSelect(document.getElementById("typeId"), typeList, "typeId", "type");
+            populateSelect(document.getElementById("statusId"), statusList, "statusId", "status");
+
+            document.getElementById("taskForm")
+                    .addEventListener("submit", handleSubmitTask);
+        }
+    };
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>Formulaire To Do List</h1>
+    </header>
+
+    <main>
+        <div class="forms">
+            <h2>Créer une tâche</h2>
+
+            <form id="taskForm" class="form-container">
+                <div class="form-group">
+                    <label for="taskName">Nom de la tâche</label>
+                    <input id="taskName" type="text" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDesc">Description</label>
+                    <textarea id="taskDesc" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="priorityId">Priorité</label>
+                    <select id="priorityId" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="contextId">Contexte</label>
+                    <select id="contextId" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="typeId">Type</label>
+                    <select id="typeId" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="statusId">Status</label>
+                    <select id="statusId" required></select>
+                </div>
+
+                <button type="submit">Créer la tâche</button>
+
+                <div class="links">
+                    <a href="bilan.html">Voir le récapitulatif des tâches</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>Léo Merkel, Hassan Merito - 2025 - My To Do List</p>
+    </footer>
+</body>
+</html>
