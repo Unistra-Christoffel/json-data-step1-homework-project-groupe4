@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bilan des tâches</title>
+  <style>
+    body {
+      min-height: 100vh;
+      margin:0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+    main { flex: 1; }
+    h1 { text-align: center; color: #333; }
+
+    .filters {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filters label { font-weight: bold; margin-right: 5px; }
+    .filters select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      background: #f2f2f2;
+      font-weight: bold;
+    }
+
+    .links {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .links a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .links a:hover { text-decoration: underline; }
+
+    footer { text-align: center; color: #777; margin-top: 20px; }
+
+    .btn-status {
+      font-size: 0.8rem;
+      margin: 2px;
+      padding: 4px 8px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #e9e9e9;
+      opacity: 0.6;
+      transition: 0.3s;
+    }
+    .btn-status:hover { opacity: 1; background-color: #ddd; }
+    .btn-status.active {
+      opacity: 1; 
+      font-weight: bold; 
+      cursor: default;
+    }
+    .btn-status.active.status-blue {
+        background-color: #007bff; color: white; border-color: #0056b3;
+    }
+    .btn-status.active.status-red {
+        background-color: #dc3545; color: white; border-color: #bd2130;
+    }
+    .btn-status.active.status-yellow {
+        background-color: #ffc107; color: #212529; border-color: #d39e00;
+    }
+    .btn-status.active.status-green {
+        background-color: #28a745; color: white; border-color: #1e7e34;
+    }
+  </style>
+  <script>
+    const STORAGE_KEY = "taskList";
+
+    const statusColorMap = {
+      1: "status-blue",
+      2: "status-blue",
+      3: "status-red",
+      4: "status-yellow",
+      5: "status-green"
+    };
+    const priorityList = [
+      { priorityId: 1, level: "Faible" },
+      { priorityId: 2, level: "Normal" },
+      { priorityId: 3, level: "Urgent" },
+      { priorityId: 4, level: "Critique" }
+    ];
+
+    const contextList = [
+      { contextId: 1, context: "Bureau" },
+      { contextId: 2, context: "Domicile" },
+      { contextId: 3, context: "Déplacement" },
+      { contextId: 4, context: "En ligne" }
+    ];
+
+    const typeList = [
+      { typeId: 1, type: "Appel" },
+      { typeId: 2, type: "Email" },
+      { typeId: 3, type: "Rédaction" },
+      { typeId: 4, type: "Réunion" },
+      { typeId: 5, type: "Maintenance" }
+    ];
+
+    const statusList = [
+      { statusId: 1, status: "À faire" },
+      { statusId: 2, status: "En cours" },
+      { statusId: 3, status: "Bloquée" },
+      { statusId: 4, status: "En attente" },
+      { statusId: 5, status: "Terminée" }
+    ];
+
+    function loadTasks() {
+      const json = localStorage.getItem(STORAGE_KEY);
+      return json ? JSON.parse(json) : [];
+    }
+
+    function findName(list, idKey, labelKey, idValue) {
+      const item = list.find(el => el[idKey] == idValue);
+      return item ? item[labelKey] : "";
+    }
+
+    function updateStatus(taskId, newStatusId) {
+      let tasks = loadTasks();
+      let taskIndex = tasks.findIndex(t => t.taskId == taskId);
+      if (taskIndex !== -1) {
+        tasks[taskIndex].statusId = newStatusId;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+        renderTable();
+      }
+    }
+    function renderTable() {
+      const tasks = loadTasks();
+      const tbody = document.getElementById("taskTableBody");
+      const filterStatutVal = document.getElementById("filterStatut").value;
+      const filterPrioriteVal = document.getElementById("filterPriorite").value;
+
+      tbody.innerHTML = "";
+
+      tasks.forEach(task => {
+        if (filterPrioriteVal !== "all" && task.priorityId != filterPrioriteVal) {
+            return;
+        }
+        if (filterStatutVal === "actifs") {
+            if (task.statusId == 5) return;
+        } 
+        else if (filterStatutVal === "termines") {
+            if (task.statusId != 5) return;
+        }
+        else if (filterStatutVal !== "all") {
+             if (task.statusId != filterStatutVal) return;
+        }
+
+        let buttonsHtml = '';
+        statusList.forEach(st => {
+            let isActiveClass = '';
+            let colorClass = '';
+            let disabledAttr = '';
+            if (task.statusId == st.statusId) {
+                isActiveClass = 'active';
+                disabledAttr = 'disabled';
+                colorClass = statusColorMap[st.statusId];
+            }
+            buttonsHtml += `<button 
+                              class="btn-status ${isActiveClass} ${colorClass}" 
+                              onclick="updateStatus(${task.taskId}, ${st.statusId})" 
+                              ${disabledAttr}>
+                              ${st.status}
+                            </button> `;
+        });
+
+        tbody.insertAdjacentHTML("beforeend", `
+          <tr>
+            <td>${task.taskId}</td>
+            <td>${task.taskName}</td>
+            <td>${task.taskDesc}</td>
+            <td>${findName(priorityList, "priorityId", "level", task.priorityId)}</td>
+            <td>${findName(contextList, "contextId", "context", task.contextId)}</td>
+            <td>${findName(typeList, "typeId", "type", task.typeId)}</td>
+            <td>${buttonsHtml}</td>
+          </tr>
+        `);
+      });
+      if (tbody.innerHTML === "") {
+          tbody.innerHTML = "<tr><td colspan='7' style='text-align:center'>Aucune tâche ne correspond à ces critères.</td></tr>";
+      }
+    }
+
+    document.onreadystatechange = function () {
+      if (document.readyState === "complete") {
+        renderTable();
+      }
+    };
+  </script>
+</head>
+
+<body>
+  <h1>Bilan des tâches</h1>
+
+  <div class="links">
+    <a href="index.html">Retour au formulaire</a>
+  </div>
+
+  <div class="filters">
+    <div>
+        <label for="filterStatut">Statut :</label>
+        <select id="filterStatut" onchange="renderTable()">
+            <option value="actifs" selected>En cours</option>
+            <option value="termines">Archives</option>
+            <option value="all">Tout afficher</option>
+            <option disabled>──────────</option>
+            <option value="1">À faire</option>
+            <option value="2">En cours</option>
+            <option value="3">Bloquée</option>
+            <option value="4">En attente</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="filterPriorite">Priorité :</label>
+        <select id="filterPriorite" onchange="renderTable()">
+            <option value="all" selected>Toutes les priorités</option>
+            <option value="1">Faible</option>
+            <option value="2">Normal</option>
+            <option value="3">Urgent</option>
+            <option value="4">Critique</option>
+        </select>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Priorité</th>
+        <th>Contexte</th>
+        <th>Type</th>
+        <th>Changer Statut</th>
+      </tr>
+    </thead>
+    <tbody id="taskTableBody"></tbody>
+  </table>
+
+  <footer>
+    <p>Léo Merkel, Hassan Merito - 2025 - My To Do List</p>
+  </footer>
+</body>
+</html>
